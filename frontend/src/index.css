@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 font-sans antialiased;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-sm border border-slate-200 p-5;
+}
+
+.card-title {
+  @apply text-sm font-semibold text-slate-500 uppercase tracking-wider;
+}
+
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-sm font-medium
+         bg-brand-600 text-white hover:bg-brand-700 transition;
+}
