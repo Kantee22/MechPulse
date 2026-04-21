@@ -1,0 +1,405 @@
+[
+    {
+        "id": "mechpulse",
+        "type": "tab",
+        "label": "MechPulse",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "mqtt_in",
+        "type": "mqtt in",
+        "z": "mechpulse",
+        "name": "MQTT Subscribe",
+        "topic": "b6710545440/mechpulse/data",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "e05d636e71e17888",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 350,
+        "y": 480,
+        "wires": [
+            [
+                "build_sql",
+                "debug_mqtt"
+            ]
+        ]
+    },
+    {
+        "id": "build_sql",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "Build SQL",
+        "func": "const d = msg.payload;\n\nlet score = 100;\nif (d.vib_count > 0) score -= d.vib_count * 5;\nif (d.knock_count > 0) score -= d.knock_count * 10;\nif (d.sound_var > 100) score -= 4;\n\nconst hour = new Date().getHours();\nlet temp = 27;\nif (hour >= 6 && hour <= 9) temp = 28 + Math.random() * 3;\nelse if (hour >= 10 && hour <= 16) temp = 32 + Math.random() * 6;\nelse if (hour >= 17 && hour <= 21) temp = 30 + Math.random() * 4;\nelse temp = 26 + Math.random() * 3;\n\nif (temp > 38) score -= 3;\nscore = Math.max(0, Math.min(100, score + Math.floor(Math.random() * 5 - 2)));\n\nlet status = 'normal';\nif (score < 60) status = 'critical';\nelse if (score < 85) status = 'warning';\n\nmsg.topic = `INSERT INTO sensor_data (phase, cycle, vib_count, knock_count, sound_avg, sound_var, temperature, health_score, status) VALUES ('${d.phase}', ${d.cycle}, ${d.vib_count}, ${d.knock_count}, ${d.sound_avg || 0}, ${d.sound_var}, ${temp.toFixed(1)}, ${score}, '${status}')`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 480,
+        "wires": [
+            [
+                "mysql"
+            ]
+        ]
+    },
+    {
+        "id": "mysql",
+        "type": "mysql",
+        "z": "mechpulse",
+        "mydb": "c51d90895c612884",
+        "name": "",
+        "x": 790,
+        "y": 480,
+        "wires": [
+            [
+                "debug_result"
+            ]
+        ]
+    },
+    {
+        "id": "debug_mqtt",
+        "type": "debug",
+        "z": "mechpulse",
+        "name": "MQTT In",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "debug_result",
+        "type": "debug",
+        "z": "mechpulse",
+        "name": "SQL Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "weather_inject_new",
+        "type": "inject",
+        "z": "mechpulse",
+        "name": "Every 10 min",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 240,
+        "y": 760,
+        "wires": [
+            [
+                "weather_http_new"
+            ]
+        ]
+    },
+    {
+        "id": "weather_http_new",
+        "type": "http request",
+        "z": "mechpulse",
+        "name": "WeatherAPI Bangkok",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.weatherapi.com/v1/current.json?key=YOUR_WEATHERAPI_KEY&q=Bangkok&aqi=no",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 490,
+        "y": 760,
+        "wires": [
+            [
+                "weather_parse_new"
+            ]
+        ]
+    },
+    {
+        "id": "weather_parse_new",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "Parse Weather",
+        "func": "const d = msg.payload;\n\nif (!d || !d.current) {\n    node.warn('No weather data');\n    return null;\n}\n\nconst temp = d.current.temp_c;\nconst humidity = d.current.humidity;\nconst pressure = Math.round(d.current.pressure_mb);\nconst desc = d.current.condition.text.toLowerCase();\nconst wind = d.current.wind_kph / 3.6;\nconst city = d.location.name;\n\nconst descSafe = desc.replace(/'/g, \"''\");\n\nmsg.topic = `INSERT INTO weather_data (city, temp_outside, humidity, pressure, weather_desc, wind_speed) VALUES ('${city}', ${temp}, ${humidity}, ${pressure}, '${descSafe}', ${wind.toFixed(1)})`;\n\nreturn msg;",
+        "outputs": 1,
+        "x": 740,
+        "y": 760,
+        "wires": [
+            [
+                "weather_mysql_new"
+            ]
+        ]
+    },
+    {
+        "id": "weather_mysql_new",
+        "type": "mysql",
+        "z": "mechpulse",
+        "mydb": "mysql_config",
+        "name": "MySQL Weather",
+        "x": 970,
+        "y": 760,
+        "wires": [
+            [
+                "weather_debug_new"
+            ]
+        ]
+    },
+    {
+        "id": "weather_debug_new",
+        "type": "debug",
+        "z": "mechpulse",
+        "name": "Weather Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1190,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "57dd5b642d4b2409",
+        "type": "http in",
+        "z": "mechpulse",
+        "name": "",
+        "url": "/api/sensor",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 900,
+        "wires": [
+            [
+                "c9c587365f500df7"
+            ]
+        ]
+    },
+    {
+        "id": "c9c587365f500df7",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "function 1",
+        "func": "const limit = Math.min(parseInt(msg.req.query.limit) || 2000, 20000);\nconst phase = msg.req.query.phase;\nlet sql = \"SELECT * FROM `sensor_data`\";\nif (phase) sql += ` WHERE phase = ${JSON.stringify(phase)}`;\nsql += ` ORDER BY timestamp DESC LIMIT ${limit}`;\nmsg.topic = sql;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 920,
+        "wires": [
+            [
+                "8600601c5c07e39e"
+            ]
+        ]
+    },
+    {
+        "id": "8600601c5c07e39e",
+        "type": "mysql",
+        "z": "mechpulse",
+        "mydb": "c51d90895c612884",
+        "name": "",
+        "x": 740,
+        "y": 920,
+        "wires": [
+            [
+                "042046ee66c638a5"
+            ]
+        ]
+    },
+    {
+        "id": "56a429bc713b16dd",
+        "type": "http response",
+        "z": "mechpulse",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1200,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "042046ee66c638a5",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "function 2",
+        "func": "msg.payload = { data: msg.payload };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 920,
+        "wires": [
+            [
+                "56a429bc713b16dd"
+            ]
+        ]
+    },
+    {
+        "id": "1924cf777ec8a778",
+        "type": "http in",
+        "z": "mechpulse",
+        "name": "",
+        "url": "/api/weather",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 240,
+        "y": 1060,
+        "wires": [
+            [
+                "f346ce8cf23eb54c"
+            ]
+        ]
+    },
+    {
+        "id": "f346ce8cf23eb54c",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "function 3",
+        "func": "const limit = Math.min(parseInt(msg.req.query.limit) || 2000, 20000);\nmsg.topic = \"SELECT * FROM `weather_data` ORDER BY timestamp DESC LIMIT \" + limit;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 1080,
+        "wires": [
+            [
+                "b372482556c70627"
+            ]
+        ]
+    },
+    {
+        "id": "b372482556c70627",
+        "type": "mysql",
+        "z": "mechpulse",
+        "mydb": "mysql_config",
+        "name": "",
+        "x": 740,
+        "y": 1080,
+        "wires": [
+            [
+                "e32a6d59f696b0fc"
+            ]
+        ]
+    },
+    {
+        "id": "3c0f725826c1fc15",
+        "type": "http response",
+        "z": "mechpulse",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1200,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "e32a6d59f696b0fc",
+        "type": "function",
+        "z": "mechpulse",
+        "name": "function 4",
+        "func": "msg.payload = { data: msg.payload };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 1080,
+        "wires": [
+            [
+                "3c0f725826c1fc15"
+            ]
+        ]
+    },
+    {
+        "id": "e05d636e71e17888",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "iot.cpe.ku.ac.th",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "c51d90895c612884",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "iot.cpe.ku.ac.th",
+        "port": "3306",
+        "db": "b6710545440",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "mysql_config",
+        "type": "MySQLdatabase",
+        "name": "MechPulse DB",
+        "host": "iot.cpe.ku.ac.th",
+        "port": "3306",
+        "db": "b6710545440",
+        "tz": "",
+        "charset": "UTF8"
+    }
+]
