@@ -3,12 +3,12 @@ import { api } from "../api.js";
 
 function gradeTone(g) {
   return {
-    A: "text-emerald-600",
-    B: "text-lime-600",
-    C: "text-amber-500",
-    D: "text-orange-500",
-    F: "text-rose-600",
-  }[g] || "text-slate-600";
+    A: "text-emerald-300",
+    B: "text-sky-300",
+    C: "text-amber-300",
+    D: "text-orange-300",
+    F: "text-rose-300",
+  }[g] || "text-slate-200";
 }
 
 export default function HealthScoreCard() {
@@ -34,11 +34,11 @@ export default function HealthScoreCard() {
         <>
           <div className="mt-2 flex items-end gap-4">
             <div className={`text-6xl font-bold ${gradeTone(data.grade)}`}>{data.score}</div>
-            <div className={`text-2xl font-semibold ${gradeTone(data.grade)} mb-2`}>Grade {data.grade}</div>
+            <div className={`text-3xl font-bold ${gradeTone(data.grade)} mb-2`}>Grade {data.grade}</div>
           </div>
-          <div className="mt-3 h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+          <div className="mt-3 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-emerald-500"
+              className="h-full bg-sky-500"
               style={{ width: `${data.score}%` }}
             />
           </div>
@@ -47,7 +47,7 @@ export default function HealthScoreCard() {
               .filter(([k]) => k !== "window_rows")
               .map(([k, v]) => (
                 <div key={k} className="flex justify-between pr-3">
-                  <span className="text-slate-500">{k.replace(/_/g, " ")}</span>
+                  <span className="text-slate-400">{k.replace(/_/g, " ")}</span>
                   <span className="font-medium">{(Number(v) * 100).toFixed(0)}%</span>
                 </div>
               ))}

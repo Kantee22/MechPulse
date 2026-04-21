@@ -19,7 +19,7 @@ export default function DailySummary() {
       {error && <div className="text-rose-600 text-sm">{error}</div>}
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-slate-500 text-xs uppercase">
+          <tr className="table-head-row">
             <th className="py-2 pr-4">Day</th>
             <th className="py-2 pr-4">Rows</th>
             <th className="py-2 pr-4">Peak vib</th>

@@ -37,14 +37,14 @@ export default function CorrelationHeatmap({ mode = "sensor", title }) {
       <div className="flex items-center justify-between mb-3">
         <div>
           <div className="card-title">{heading}</div>
-          <div className="text-lg font-semibold">
+          <div className="text-xl font-semibold tracking-tight">
             {method[0].toUpperCase() + method.slice(1)} correlation matrix
           </div>
         </div>
         <select
           value={method}
           onChange={(e) => setMethod(e.target.value)}
-          className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
+          className="input-control"
         >
           <option value="pearson">Pearson</option>
           <option value="spearman">Spearman</option>

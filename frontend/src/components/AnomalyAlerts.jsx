@@ -27,14 +27,14 @@ export default function AnomalyAlerts() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <div className="card-title">Anomaly alerts</div>
-          <div className="text-lg font-semibold">Cross-sensor deviation</div>
+          <div className="text-xl font-semibold tracking-tight">Cross-sensor deviation</div>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <label className="text-slate-500">z &ge;</label>
           <select
             value={z}
             onChange={(e) => setZ(Number(e.target.value))}
-            className="rounded-lg border border-slate-300 px-2 py-1"
+            className="input-control"
           >
             {[2.0, 2.5, 3.0, 4.0].map((n) => <option key={n} value={n}>{n}</option>)}
           </select>

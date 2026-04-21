@@ -6,16 +6,71 @@ html, body, #root {
   height: 100%;
 }
 
+html {
+  font-size: 110%;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 106%;
+  }
+}
+
 body {
-  @apply bg-slate-50 text-slate-800 font-sans antialiased;
+  @apply antialiased font-sans text-base font-normal;
+  background-color: var(--lg-body-bg);
+  color: var(--lg-body-text);
+  transition: background-color 0.36s ease, color 0.36s ease;
+  letter-spacing: 0.01em;
+}
+
+#root {
+  @apply relative;
 }
 
 .card {
-  @apply bg-white rounded-2xl shadow-sm border border-slate-200 p-5;
+  @apply rounded-2xl border p-6 transition;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: linear-gradient(165deg, var(--lg-card-a), var(--lg-card-b));
+  border-color: var(--lg-glass-border);
+  box-shadow: var(--lg-shadow), 0 16px 40px -26px rgba(2, 32, 56, 0.4), 0 0 0 1px rgba(56, 189, 248, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card:hover {
+  @apply -translate-y-0.5;
+  box-shadow: var(--lg-shadow), 0 24px 52px -28px rgba(2, 48, 72, 0.42), 0 0 40px -12px rgba(34, 211, 238, 0.12);
 }
 
 .card-title {
-  @apply text-sm font-semibold text-slate-500 uppercase tracking-wider;
+  @apply text-base font-semibold uppercase tracking-wide;
+  color: var(--lg-muted);
+}
+
+html[data-theme="light"] .card-title {
+  color: rgba(15, 23, 42, 0.55);
 }
 
 .badge {
@@ -23,6 +78,33 @@ body {
 }
 
 .btn {
-  @apply inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-sm font-medium
-         bg-brand-600 text-white hover:bg-brand-700 transition;
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl text-base font-semibold
+         text-slate-900 transition;
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
+}
+.btn:hover {
+  background: linear-gradient(135deg, #bae6fd, #0ea5e9);
+}
+
+.input-control {
+  @apply rounded-lg border px-3 py-2 text-base
+         focus:outline-none focus:ring-2 transition;
+  color: var(--lg-body-text);
+  background: var(--lg-card-b);
+  border-color: var(--lg-glass-border-subtle);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+html[data-theme="dark"] .input-control:focus {
+  @apply ring-cyan-400/35;
+}
+
+html[data-theme="light"] .input-control:focus {
+  @apply ring-cyan-600/25;
+}
+
+.table-head-row {
+  @apply text-left text-slate-400 text-sm uppercase tracking-wide;
 }

@@ -29,7 +29,7 @@ export default function OverlayChart() {
   return (
     <div className="card">
       <div className="card-title">Fan vs ambient environment</div>
-      <div className="text-lg font-semibold">Temperature overlay (sensor_data + weather)</div>
+      <div className="text-xl font-semibold tracking-tight">Temperature overlay (sensor_data + weather)</div>
       {error && <div className="text-rose-600 text-sm mt-2">Failed to load: {error}</div>}
       <div className="h-80 mt-3">
         <ResponsiveContainer width="100%" height="100%">

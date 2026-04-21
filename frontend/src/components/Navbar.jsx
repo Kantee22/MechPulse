@@ -44,26 +44,28 @@ export default function Navbar() {
   }
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-6">
+    <header className="navbar-glass sticky top-0 z-20 max-md:pr-14">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold">M</div>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 shadow-md shadow-sky-900/35 flex items-center justify-center text-white font-bold">
+            M
+          </div>
           <div>
-            <div className="font-semibold leading-tight">MechPulse</div>
-            <div className="text-xs text-slate-500 leading-tight">Machine Health Monitor</div>
+            <div className="text-lg font-semibold leading-tight text-slate-100">MechPulse</div>
+            <div className="text-sm text-slate-400 leading-tight">Machine Health Monitor</div>
           </div>
         </div>
-        <nav className="flex items-center gap-1 ml-4">
+        <nav className="nav-pill-glass flex items-center gap-1 ml-2 rounded-xl p-1">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.to === "/"}
               className={({ isActive }) =>
-                `px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                `px-3 py-2 rounded-lg text-base font-medium transition ${
                   isActive
-                    ? "bg-brand-50 text-brand-700"
-                    : "text-slate-600 hover:bg-slate-100"
+                    ? "bg-sky-300 text-slate-900 shadow-sm ring-1 ring-sky-200/50"
+                    : "text-slate-300 hover:bg-slate-800/80"
                 }`
               }
             >
@@ -71,9 +73,9 @@ export default function Navbar() {
             </NavLink>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2 text-xs">
+        <div className="nav-pill-glass ml-auto hidden xl:flex items-center gap-2 text-sm rounded-full px-3 py-2">
           <span className={`w-2 h-2 rounded-full ${dot}`} />
-          <span className="text-slate-600">{label}</span>
+          <span className="text-slate-300">{label}</span>
         </div>
       </div>
     </header>

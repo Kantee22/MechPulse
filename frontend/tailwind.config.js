@@ -5,16 +5,28 @@ export default {
     extend: {
       colors: {
         brand: {
-          50:  "#eef7ff",
-          100: "#d9ecff",
-          500: "#2b86ff",
-          600: "#1466e0",
-          700: "#1250ad",
-          900: "#0a2a5c",
+          50:  "#f0f9ff",
+          100: "#e0f2fe",
+          500:  "#0ea5e9",
+          600:  "#0284c7",
+          700:  "#0369a1",
+          900:  "#0c4a6e",
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Lexend", "system-ui", "Segoe UI", "sans-serif"],
+        display: ["Lexend", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        /* Slightly larger scale for readability */
+        xs: ["0.8125rem", { lineHeight: "1.25rem" }],
+        sm: ["0.9375rem", { lineHeight: "1.375rem" }],
+        base: ["1.0625rem", { lineHeight: "1.65rem" }],
+        lg: ["1.1875rem", { lineHeight: "1.75rem" }],
+        xl: ["1.3125rem", { lineHeight: "1.75rem" }],
+        "2xl": ["1.5rem", { lineHeight: "2rem" }],
+        "3xl": ["1.875rem", { lineHeight: "2.25rem" }],
+        "4xl": ["2.25rem", { lineHeight: "2.5rem" }],
       },
     },
   },

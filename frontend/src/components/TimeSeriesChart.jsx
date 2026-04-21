@@ -59,7 +59,7 @@ export default function TimeSeriesChart({
           <div className="card-title">
             {source === "weather" ? "Weather time series" : "Sensor time series"}
           </div>
-          <div className="text-lg font-semibold">
+          <div className="text-xl font-semibold tracking-tight">
             {options.find(m => m.key === metric)?.label}
           </div>
         </div>
@@ -67,14 +67,14 @@ export default function TimeSeriesChart({
           <select
             value={metric}
             onChange={(e) => setMetric(e.target.value)}
-            className="rounded-lg border border-slate-300 px-2 py-1"
+            className="input-control"
           >
             {options.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
           </select>
           <select
             value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
-            className="rounded-lg border border-slate-300 px-2 py-1"
+            className="input-control"
           >
             {[100, 300, 600, 1200, 3000].map((n) => <option key={n} value={n}>Last {n}</option>)}
           </select>
